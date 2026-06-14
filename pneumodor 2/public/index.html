@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pneumo D'Or · Rio de Janeiro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+:root{
+  --bg:#F7F6F2;
+  --surface:#FFFFFF;
+  --surface2:#F0EFE9;
+  --surface3:#E8E6DE;
+  --border:#DDD9CE;
+  --border2:#C5C0B0;
+  --text:#1C1B18;
+  --text2:#5C5A52;
+  --text3:#9C9A90;
+  --gold:#B8973A;
+  --gold-light:#F5EDD0;
+  --gold-dark:#8A6E24;
+  --green:#0D5E48;
+  --green-mid:#1A7A5E;
+  --green-bg:#E4F2EC;
+  --green-text:#0A4535;
+  --blue:#1A4F8A;
+  --blue-bg:#E8F0FA;
+  --blue-text:#123A6A;
+  --amber:#8A5200;
+  --amber-bg:#FDF0DC;
+  --amber-text:#6A3D00;
+  --red:#8A1C1C;
+  --red-bg:#FAEAEA;
+  --red-text:#6A1010;
+  --purple:#4A3A9E;
+  --purple-bg:#EEEAFE;
+  --purple-text:#352A7E;
+  --teal:#0A5A4A;
+  --teal-bg:#E2F2EE;
+  --teal-text:#084535;
+  --pink:#8A2550;
+  --pink-bg:#FAE8F0;
+  --pink-text:#6A1A3C;
+  --radius-sm:6px;
+  --radius:10px;
+  --radius-lg:14px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.06);
+  --shadow:0 2px 8px rgba(0,0,0,0.08),0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md:0 8px 24px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
+  --shadow-lg:0 16px 48px rgba(0,0,0,0.14),0 4px 12px rgba(0,0,0,0.08);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* -- HEADER -- */
+header{
+  background:var(--green);
+  padding:0 32px;
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-emblem{
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.20);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;
+}
+.logo-text{display:flex;flex-direction:column;gap:0}
+.logo-main{font-family:'DM Serif Display',serif;font-size:16px;color:#fff;letter-spacing:0.01em;line-height:1.1}
+.logo-sub{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.08em;text-transform:uppercase;font-weight:500}
+.header-right{display:flex;align-items:center;gap:12px}
+.badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:0.02em;white-space:nowrap}
+.badge-medico{background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.20)}
+.badge-gestor{background:var(--gold-light);color:var(--gold-dark);border:1px solid #D4AE5A}
+.badge-enf{background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.90);border:1px solid rgba(255,255,255,0.15)}
+.btn-logout{
+  font-size:12px;font-weight:500;color:rgba(255,255,255,0.75);cursor:pointer;
+  border:1px solid rgba(255,255,255,0.20);background:rgba(255,255,255,0.08);
+  padding:6px 12px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;gap:6px;transition:all .15s;
+  font-family:'Inter',sans-serif;
+}
+.btn-logout:hover{background:rgba(255,255,255,0.15);color:#fff}
+
+/* -- LAYOUT -- */
+.app-body{display:flex;min-height:calc(100vh - 60px)}
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:20px 0;
+  position:sticky;top:60px;
+  height:calc(100vh - 60px);
+  overflow-y:auto;
+}
+.sidebar-section{margin-bottom:24px}
+.sidebar-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:0 18px;margin-bottom:8px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 18px;font-size:13px;font-weight:500;
+  color:var(--text2);cursor:pointer;transition:all .12s;
+  border-left:2px solid transparent;
+}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--green-bg);color:var(--green);border-left-color:var(--green);font-weight:600}
+.nav-item svg{width:15px;height:15px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;font-weight:700}
+.nav-badge-g{margin-left:auto;background:var(--green);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;font-weight:700}
+main{flex:1;padding:28px 32px;max-width:900px;min-width:0}
+
+/* -- LOGIN -- */
+.login-page{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#0D5E48 0%,#1A7A5E 50%,#0D5E48 100%);
+  padding:20px;
+}
+.login-box{
+  background:var(--surface);border-radius:var(--radius-lg);
+  width:100%;max-width:400px;
+  box-shadow:var(--shadow-lg);
+  overflow:hidden;
+}
+.login-top{
+  background:var(--green);padding:32px 32px 28px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;
+}
+.login-top-emblem{
+  width:56px;height:56px;border-radius:14px;
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+}
+.login-top h1{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1.2}
+.login-top p{font-size:12px;color:rgba(255,255,255,0.60);text-transform:uppercase;letter-spacing:0.1em;font-weight:500}
+.login-body{padding:28px 32px 32px}
+.login-body h2{font-size:15px;font-weight:600;margin-bottom:4px}
+.login-body>p{font-size:13px;color:var(--text3);margin-bottom:22px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.field input,.field select{
+  width:100%;padding:10px 13px;font-size:14px;
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface);color:var(--text);
+  font-family:'Inter',sans-serif;transition:border-color .15s,box-shadow .15s;outline:none;
+  appearance:none;-webkit-appearance:none;
+}
+.field input:focus,.field select:focus{border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(26,122,94,0.12)}
+.field input::placeholder{color:var(--text3)}
+.btn-login{
+  width:100%;padding:12px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;
+  letter-spacing:0.01em;margin-top:4px;
+}
+.btn-login:hover{background:var(--green-mid)}
+.login-error{
+  background:var(--red-bg);border:1px solid #EAA0A0;
+  border-radius:var(--radius-sm);padding:10px 14px;
+  font-size:13px;color:var(--red-text);font-weight:500;margin-bottom:16px;display:none;
+}
+.login-error.show{display:block}
+
+/* -- PAGE TITLES -- */
+.page-header{margin-bottom:24px}
+.page-header h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:2px}
+.page-header p{font-size:13px;color:var(--text3)}
+
+/* -- FORM -- */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.form-card-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.form-card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.form-row  {display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.form-row-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:7px}
+input[type=text],input[type=number],input[type=date],select{
+  width:100%;padding:9px 12px;font-size:13px;
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface);color:var(--text);
+  font-family:'Inter',sans-serif;transition:border-color .15s,box-shadow .15s;outline:none;
+  appearance:none;-webkit-appearance:none;
+}
+input:focus,select:focus{border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(26,122,94,0.12)}
+input::placeholder{color:var(--text3)}
+.form-group{margin-bottom:0}
+
+/* PILLS */
+.pill-group{display:flex;gap:7px;flex-wrap:wrap}
+.pill{
+  font-size:12px;font-weight:500;padding:6px 13px;
+  border:1px solid var(--border);border-radius:20px;
+  cursor:pointer;background:var(--surface);color:var(--text2);
+  transition:all .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;
+  font-family:'Inter',sans-serif;
+}
+.pill:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.pill.sel-blue  {background:var(--blue-bg);  color:var(--blue-text);  border-color:#85B7EB}
+.pill.sel-green {background:var(--green-bg); color:var(--green-text); border-color:#5DC8A0}
+.pill.sel-warn  {background:var(--amber-bg); color:var(--amber-text); border-color:#D4930A}
+.pill.sel-red   {background:var(--red-bg);   color:var(--red-text);   border-color:#E09090}
+.pill.sel-purple{background:var(--purple-bg);color:var(--purple-text);border-color:#AFA9EC}
+.pill.sel-teal  {background:var(--teal-bg);  color:var(--teal-text);  border-color:#5DC8B0}
+.pill.sel-gold  {background:var(--gold-light);color:var(--gold-dark); border-color:#D4AE5A}
+
+.consulta-box{
+  border:1px solid #D4930A;border-radius:var(--radius);padding:16px;margin-top:14px;
+  background:linear-gradient(135deg,#FFFDF7,#FDF5E0);
+}
+.consulta-box-title{font-size:12px;font-weight:600;color:var(--amber-text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sub-box{border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-top:12px;background:var(--surface2)}
+.sub-box-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+
+.btn-save{
+  width:100%;padding:13px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--radius);font-size:14px;font-weight:600;
+  cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;
+  transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px;
+  letter-spacing:0.01em;
+}
+.btn-save:hover{background:var(--green-mid)}
+.btn-save:active{transform:scale(0.99)}
+.btn-save:disabled{background:var(--surface2);color:var(--text3);cursor:not-allowed;border:1px solid var(--border);box-shadow:none}
+.success-banner{
+  background:var(--green-bg);border:1px solid #5DC8A0;border-radius:var(--radius);
+  padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+.success-banner span{font-size:14px;color:var(--green-text);font-weight:600}
+
+/* -- TAGS -- */
+.tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:0.02em;white-space:nowrap}
+.tag-visita  {background:var(--blue-bg);  color:var(--blue-text)}
+.tag-parecer {background:var(--amber-bg); color:var(--amber-text)}
+.tag-proc    {background:var(--purple-bg);color:var(--purple-text)}
+.tag-alta-p  {background:var(--green-bg); color:var(--green-text)}
+.tag-alta-h  {background:#E8F0FA;         color:#1A4F8A}
+.tag-consulta{background:var(--amber-bg); color:var(--amber-text)}
+.tag-hosp    {background:var(--surface2); color:var(--text2);border:1px solid var(--border)}
+.tag-pendente{background:var(--red-bg);   color:var(--red-text)}
+.tag-agendado{background:var(--green-bg); color:var(--green-text)}
+
+/* -- LISTA -- */
+.list-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{
+  font-size:12px;font-weight:500;padding:5px 12px;
+  border:1px solid var(--border);border-radius:20px;
+  cursor:pointer;background:var(--surface);color:var(--text2);
+  transition:all .12s;font-family:'Inter',sans-serif;
+}
+.filter-btn:hover{border-color:var(--border2);color:var(--text)}
+.filter-btn.active{background:var(--text);color:#fff;border-color:var(--text)}
+.list-meta{font-size:12px;color:var(--text3);margin-bottom:12px}
+
+.record-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;
+  transition:box-shadow .15s,border-color .15s;cursor:default;
+}
+.record-card:hover{box-shadow:var(--shadow);border-color:var(--border2)}
+.record-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.record-name{font-size:14px;font-weight:600;line-height:1.3}
+.record-name span{font-weight:400;color:var(--text2);font-size:13px}
+.record-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.record-medico{font-size:11px;color:var(--green-text);font-weight:600;margin-top:3px}
+.record-date{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.date-hoje{background:var(--green-bg);color:var(--green-text)}
+.date-old{color:var(--text3)}
+.record-tags{display:flex;gap:6px;flex-wrap:wrap}
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty p{font-size:14px}
+
+/* -- DASHBOARD -- */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:28px}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 16px;text-align:center;position:relative;overflow:hidden;
+}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green)}
+.kpi.amber::before{background:var(--gold)}
+.kpi.red::before{background:var(--red)}
+.kpi.blue::before{background:var(--blue)}
+.kpi.purple::before{background:var(--purple)}
+.kpi-num{font-size:30px;font-weight:700;color:var(--text);letter-spacing:-0.03em;line-height:1}
+.kpi-label{font-size:11px;color:var(--text3);margin-top:6px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
+.kpi-delta{font-size:11px;font-weight:600;margin-top:4px}
+.delta-up{color:var(--green-text)}
+
+.section-title{
+  font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:0.08em;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Hosp cards */
+.hosp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:28px}
+.hosp-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;transition:box-shadow .15s;
+}
+.hosp-card:hover{box-shadow:var(--shadow)}
+.hosp-card-name{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.hosp-card-name span{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+.hosp-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hosp-stat{text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 8px}
+.hosp-stat-num{font-size:20px;font-weight:700;color:var(--text)}
+.hosp-stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px}
+.hosp-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+
+/* Bar chart */
+.bar-chart{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.bar-row{display:flex;align-items:center;gap:12px}
+.bar-label{font-size:12px;color:var(--text2);width:160px;flex-shrink:0;text-align:right;font-weight:500;line-height:1.3}
+.bar-track{flex:1;background:var(--surface2);border-radius:4px;height:28px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;min-width:28px;transition:width .4s ease;position:relative}
+.bar-fill span{font-size:11px;font-weight:700;color:#fff;white-space:nowrap}
+.bar-count{font-size:12px;color:var(--text3);width:32px;flex-shrink:0;text-align:right;font-weight:600}
+
+/* Médico list */
+.medico-table{width:100%;border-collapse:collapse;margin-bottom:28px}
+.medico-table th{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.medico-table td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.medico-table tr:last-child td{border-bottom:none}
+.medico-table tr:hover td{background:var(--surface2)}
+.medico-rank{width:24px;height:24px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text2)}
+.medico-rank.gold{background:var(--gold-light);color:var(--gold-dark)}
+.medico-rank.silver{background:#EEE;color:#666}
+.medico-rank.bronze{background:#F5E8DC;color:#8B5E3C}
+
+/* -- AGENDA -- */
+.agenda-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;margin-bottom:10px;
+  transition:box-shadow .15s;
+}
+.agenda-card:hover{box-shadow:var(--shadow)}
+.agenda-card.pendente{border-left:3px solid var(--red)}
+.agenda-card.agendado{border-left:3px solid var(--green)}
+.agenda-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.agenda-name{font-size:15px;font-weight:600}
+.agenda-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.agenda-status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.status-pendente{background:var(--red-bg);color:var(--red-text)}
+.status-agendado{background:var(--green-bg);color:var(--green-text)}
+.alta-info{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.agenda-data-row{display:flex;align-items:center;gap:10px}
+.agenda-data-row input[type=date]{flex:1}
+.btn-confirmar{
+  padding:9px 18px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:background .15s;
+}
+.btn-confirmar:hover{background:var(--green-mid)}
+.agendado-info{
+  display:flex;align-items:center;gap:10px;
+  background:var(--green-bg);border-radius:var(--radius-sm);padding:12px 16px;
+}
+.agendado-info span{font-size:14px;color:var(--green-text);font-weight:700}
+.btn-reeditar{
+  margin-left:auto;font-size:11px;color:var(--text3);background:none;
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:4px 10px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .12s;
+}
+.btn-reeditar:hover{border-color:var(--border2);color:var(--text)}
+
+.btn-export{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;background:var(--gold);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;
+}
+.btn-export:hover{background:var(--gold-dark)}
+.export-bar{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  background:var(--gold-light);border:1px solid #D4AE5A;
+  border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;
+}
+.export-bar-info{font-size:13px;color:var(--amber-text)}
+.export-bar-info strong{color:var(--text);font-weight:600;display:block;font-size:14px;margin-bottom:2px}
+@media(max-width:720px){
+  .sidebar{display:none}
+  main{padding:20px 16px}
+  .form-row,.form-row-3,.form-row-4{grid-template-columns:1fr}
+  header{padding:0 16px}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// --------------------------------------------------------
+//  USUÁRIOS
+// --------------------------------------------------------
+const USUARIOS = [
+  {usuario:'medico.copa',   senha:'copa123',    role:'medico',     hospital:"Copa D'Or",   nome:'Médico — Copa D\'Or'},
+  {usuario:'medico.gloria', senha:'gloria123',  role:'medico',     hospital:"Glória D'Or", nome:'Médico — Glória D\'Or'},
+  {usuario:'medico.quinta', senha:'quinta123',  role:'medico',     hospital:"Quinta D'Or", nome:'Médico — Quinta D\'Or'},
+  {usuario:'enf.copa',      senha:'enfcopa1',   role:'enfermeiro', hospital:"Copa D'Or",   nome:'Enf. Navegadora — Copa D\'Or'},
+  {usuario:'enf.gloria',    senha:'enfgloria1', role:'enfermeiro', hospital:"Glória D'Or", nome:'Enf. Navegadora — Glória D\'Or'},
+  {usuario:'enf.quinta',    senha:'enfquinta1', role:'enfermeiro', hospital:"Quinta D'Or", nome:'Enf. Navegadora — Quinta D\'Or'},
+  {usuario:'gestor',        senha:'gestao2024', role:'gestor',     hospital:null,          nome:'Gestão — Todos os hospitais'},
+];
+
+// --------------------------------------------------------
+//  MÉDICOS POR HOSPITAL (lista suspensa no formulário)
+// --------------------------------------------------------
+const MEDICOS_HOSP = {
+  "Copa D'Or":   ['Alicia Sales','Beatriz Chaves','Bruno Baena','Caroliny Lobato','Daniel Takizawa','Felipe Gonzalez','Gabriel Leitão','Gabriel Santiago','Guilherme Spinelli','Isabela Aziz','Isabela Tamiozzo','Lucas Correia','Marcus Raposo'],
+  "Glória D'Or": ['Médico Glória 1','Médico Glória 2','Médico Glória 3'],
+  "Quinta D'Or": ['Médico Quinta 1','Médico Quinta 2','Médico Quinta 3'],
+};
+const SETORES = ['Emergência','Unidade Pulmonar','CTI Geral','Cardio Intensiva','USI Cardiologia','USI Clínica','Clínica Médica','Outros'];
+const NOMES_MES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+const HOSPITAIS = ["Copa D'Or","Glória D'Or","Quinta D'Or"];
+const DOENCAS   = ['Pneumonia','DPOC','TEP','Asma','Doença Intersticial','Neoplasia Pulmonar','Pneumotórax','Derrame Pleural','Bronquiectasia','Outro'];
+const PLANOS    = ['Bradesco Saúde','SulAmérica','Amil','Unimed','Porto Seguro','Notre Dame Intermédica','Particular','Outro'];
+// Data stored in Supabase
+
+const HOSP_COLORS = {"Copa D'Or":'#1A4F8A',"Glória D'Or":'#0D5E48',"Quinta D'Or":'#4A3A9E'};
+const DX_COLORS   = ['#0D5E48','#1A4F8A','#4A3A9E','#8A5200','#8A1C1C','#0A5A4A','#8A2550','#5C5A52','#B8973A','#3A6B8A'];
+
+let S = {
+  session:null, nav:'novo', filter:'todos',
+  records:[],
+  form:emptyForm(),
+  saved:false, loginError:false,
+  gestorHosp: null,
+  selectedMes: null,
+  scanning: false,
+  scanError: null,
+  loading: false,
+};
+// Records loaded from Supabase on startup
+async function loadRecords(){
+  S.loading = true; render();
+  try {
+    const res = await fetch('/api/records');
+    if(res.ok){ S.records = await res.json(); }
+    else { S.records = []; }
+  } catch(e) { console.error('Erro ao carregar:', e); S.records = []; }
+  S.loading = false; render();
+}
+
+function emptyForm(){return{medico:'',nome:'',prontuario:'',idade:'',sexo:'',plano:'',doenca:'',setor:'',setorOutro:'',internacao:'',tipo:'',proc_sub:'',seguimento:'',desfecho:'',consulta:null}}
+async function persist(record){
+  try {
+    await fetch('/api/records',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(record)});
+  } catch(e){ console.error('Erro ao salvar:',e); }
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function isToday(ts){return new Date(ts).toDateString()===new Date().toDateString()}
+function fmtDate(d){if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`}
+function diffDays(a,b){return Math.round((new Date(b)-new Date(a))/(1000*60*60*24))}
+
+// Internação real: agrupa por prontuário, conta span de dias consecutivos de visita
+function calcInternacaoReal(records){
+  // group by prontuario
+  const byPron={};
+  records.forEach(r=>{
+    if(!r.prontuario||!r.ts)return;
+    if(!byPron[r.prontuario])byPron[r.prontuario]={nome:r.nome,pron:r.prontuario,datas:[]};
+    byPron[r.prontuario].datas.push(r.ts.slice(0,10));
+  });
+  const spans=[];
+  Object.values(byPron).forEach(p=>{
+    const sorted=[...new Set(p.datas)].sort();
+    if(sorted.length<2)return;
+    // Find consecutive runs
+    let start=sorted[0],prev=sorted[0];
+    for(let i=1;i<sorted.length;i++){
+      const gap=diffDays(prev,sorted[i]);
+      if(gap>3){// gap > 3 dias = nova internação
+        spans.push(diffDays(start,prev));
+        start=sorted[i];
+      }
+      prev=sorted[i];
+    }
+    spans.push(diffDays(start,prev));
+  });
+  if(!spans.length)return null;
+  return(spans.reduce((a,b)=>a+b,0)/spans.length).toFixed(1);
+}
+
+// -- RENDER --------------------------------------------------------------------
+function render(){
+  const root=document.getElementById('root');
+  if(!S.session){root.innerHTML=renderLogin();bindLogin();return}
+  root.innerHTML=`
+    <div style="display:flex;flex-direction:column;min-height:100vh">
+      ${renderHeader()}
+      <div class="app-body">
+        ${S.session.role!=='gestor'||true ? renderSidebar() : ''}
+        <main>${renderMain()}</main>
+      </div>
+    </div>`;
+  bindInputs();
+}
+
+function renderHeader(){
+  const bc=S.session.role==='gestor'?'badge-gestor':S.session.role==='enfermeiro'?'badge-enf':'badge-medico';
+  return`<header>
+    <div class="logo">
+      <div class="logo-emblem">🫁</div>
+      <div class="logo-text">
+        <span class="logo-main">Pneumo D'Or</span>
+        <span class="logo-sub">Rio de Janeiro</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="badge ${bc}">${esc(S.session.nome)}</span>
+      <button class="btn-logout" onclick="logout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair
+      </button>
+    </div>
+  </header>`;
+}
+
+function renderSidebar(){
+  const r=S.session.role;
+  const hosp=S.session.hospital;
+  let items=[];
+  if(r==='medico'){
+    const hoje=S.records.filter(x=>x.hospital===hosp&&isToday(x.ts)).length;
+    items=[
+      {id:'novo',icon:iconPlus(),label:'Novo registro'},
+      {id:'lista',icon:iconList(),label:'Registros',badge:hoje>0?hoje:null,badgeType:'g'},
+    ];
+  } else if(r==='enfermeiro'){
+    const pend=S.records.filter(x=>x.hospital===hosp&&x.consulta===true&&!x.data_agendada).length;
+    const ag=S.records.filter(x=>x.hospital===hosp&&x.consulta===true&&!!x.data_agendada).length;
+    items=[
+      {id:'fila',   icon:iconCal(),  label:'Fila de agendamento', badge:pend>0?pend:null, badgeType:'r'},
+      {id:'agendados',icon:iconCheck(),label:'Consultas agendadas', badge:ag>0?ag:null, badgeType:'g'},
+    ];
+  } else {
+    const pend=S.records.filter(x=>x.consulta===true&&!x.data_agendada).length;
+    items=[
+      {id:'dash',        icon:iconGrid(), label:'Visão geral'},
+      {id:'medicos',     icon:iconUser(), label:'Produção por médico'},
+      {id:'diagnosticos',icon:iconDx(),   label:'Diagnósticos'},
+      {id:'registros',   icon:iconList(), label:'Todos os registros'},
+      {id:'agenda',      icon:iconCal(),  label:'Agendamentos', badge:pend>0?pend:null, badgeType:'r'},
+      {id:'novo-gestor', icon:iconPlus(), label:'Novo registro'},
+    ];
+  }
+  // hospital selector for gestor novo-registro — no nested backticks
+  let hospSelector = '';
+  if (r==='gestor' && S.nav==='novo-gestor') {
+    const hospBtns = HOSPITAIS.map((h,hi) =>
+      '<div class="nav-item ' + (S.gestorHosp===h?'active':'') + '" style="border-radius:6px;margin-bottom:2px" onclick="setGestorHospIdx(' + hi + ')">' +
+      '<span style="width:7px;height:7px;border-radius:50%;background:' + HOSP_COLORS[h] + ';display:inline-block;flex-shrink:0"></span> ' + h + '</div>'
+    ).join('');
+    hospSelector = '<div style="padding:12px 18px 0;border-top:1px solid var(--border);margin-top:8px"><div class="sidebar-label" style="margin-bottom:8px">Hospital</div>' + hospBtns + '</div>';
+  }
+  const sidebarLabel = hosp ? '<div class="sidebar-label">'+hosp+'</div>' : '<div class="sidebar-label">Gestão</div>';
+  const navItems = items.map(i => {
+    const badge = i.badge ? (i.badgeType==='r' ? '<span class="nav-badge">'+i.badge+'</span>' : '<span class="nav-badge-g">'+i.badge+'</span>') : '';
+    return '<div class="nav-item '+(S.nav===i.id?'active':'')+'" onclick="setNav(\''+i.id+'\')">' + i.icon + ' ' + i.label + badge + '</div>';
+  }).join('');
+  return '<div class="sidebar"><div class="sidebar-section">' + sidebarLabel + navItems + '</div>' + hospSelector + '</div>';
+}
+
+function renderMain(){
+  const r=S.session.role;
+  if(r==='medico'){
+    if(S.nav==='novo') return renderPageHeader('Novo registro','Preencha os dados do atendimento')+renderForm();
+    if(S.nav==='selecionar-paciente') return renderSelecionarPaciente();
+    return renderPageHeader('Registros','Histórico de atendimentos — '+S.session.hospital)+renderListaMedico();
+  }
+  if(r==='enfermeiro'){
+    if(S.nav==='fila') return renderPageHeader('Fila de agendamento','Consultas pendentes de marcação')+renderFila();
+    return renderPageHeader('Consultas agendadas','Confirmadas pelo enfermeiro navegador')+renderAgendados();
+  }
+  // gestor
+  if(S.nav==='dash')        return renderPageHeader('Visão geral','Resumo consolidado de todos os hospitais')+renderDash();
+  if(S.nav==='medicos')     return renderPageHeader('Produção por médico','Atendimentos realizados por cada profissional')+renderMedicos();
+  if(S.nav==='diagnosticos')return renderPageHeader('Diagnósticos','Distribuição das doenças atendidas')+renderDiagnosticos();
+  if(S.nav==='registros')   return renderPageHeader('Todos os registros','Histórico completo da rede')+renderListaGestor();
+  if(S.nav==='agenda')      return renderPageHeader('Agendamentos','Fila de marcação de consultas da rede')+renderFilaGestor();
+  if(S.nav==='novo-gestor') return renderPageHeader('Novo registro','Selecione o hospital na barra lateral e preencha o atendimento')+renderFormGestor();
+  return '';
+}
+
+function renderPageHeader(title,sub){
+  return`<div class="page-header"><h2>${title}</h2><p>${sub}</p></div>`;
+}
+
+// -- LOGIN ----------------------------------------------------------------------
+function renderLogin(){
+  return`<div class="login-page">
+    <div class="login-box">
+      <div class="login-top">
+        <div class="login-top-emblem">🫁</div>
+        <h1>Pneumo D'Or<br>Rio de Janeiro</h1>
+        <p>Sistema de Gestão Pneumológica</p>
+      </div>
+      <div class="login-body">
+        <h2>Acesso ao sistema</h2>
+        <p>Entre com suas credenciais</p>
+        <div class="login-error ${S.loginError?'show':''}" id="login-err">Usuário ou senha incorretos.</div>
+        <div class="field"><label>Usuário</label>
+          <input type="text" id="l-user" placeholder="seu.usuario" autocomplete="username"></div>
+        <div class="field"><label>Senha</label>
+          <input type="password" id="l-pass" placeholder="********" autocomplete="current-password"></div>
+        <button class="btn-login" onclick="tentarLogin()">Entrar no sistema</button>
+      </div>
+    </div>
+  </div>`;
+}
+function bindLogin(){
+  setTimeout(()=>{
+    const u=document.getElementById('l-user');
+    const p=document.getElementById('l-pass');
+    if(u)u.focus();
+    if(p)p.addEventListener('keydown',e=>{if(e.key==='Enter')tentarLogin()});
+    if(u)u.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('l-pass')?.focus()});
+  },50);
+}
+function tentarLogin(){
+  const user=document.getElementById('l-user')?.value.trim().toLowerCase();
+  const pass=document.getElementById('l-pass')?.value;
+  const found=USUARIOS.find(u=>u.usuario===user&&u.senha===pass);
+  if(found){
+    S.session={...found};
+    S.nav=found.role==='gestor'?'dash':found.role==='enfermeiro'?'fila':'novo';
+    S.filter='todos';S.loginError=false;render();
+  } else {S.loginError=true;render()}
+}
+function logout(){S.session=null;S.loginError=false;S.nav='novo';S.gestorHosp=null;S.scanning=false;S.scanError=null;S.pacientesFolha=null;render()}
+
+// -- FORMULÁRIO ----------------------------------------------------------------
+function renderForm(){
+  const f=S.form;
+  const hosp = S.session.role==='gestor' ? S.gestorHosp : S.session.hospital;
+  const medicos=MEDICOS_HOSP[hosp]||[];
+  let html=S.saved?`<div class="success-banner">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A4535" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+    <span>Registro salvo com sucesso!</span></div>`:'';
+
+  // -- Scan block — sempre visível --
+  if(S.scanning){
+    html+=`<div style="background:var(--blue-bg);border:1px solid #85B7EB;border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:16px">
+      <div style="font-size:24px;margin-bottom:8px">🔍</div>
+      <div style="font-size:14px;font-weight:600;color:var(--blue-text);margin-bottom:4px">Lendo a folha...</div>
+      <div style="font-size:12px;color:var(--text3)">A IA está extraindo os dados automaticamente</div>
+    </div>`;
+  } else {
+    html+=`<div style="background:var(--gold-light);border:1px solid #D4AE5A;border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px">
+        <div style="font-size:13px;font-weight:600;color:var(--amber-text);margin-bottom:2px">📷 Ler folha automaticamente</div>
+        <div style="font-size:12px;color:var(--amber-text);opacity:.8">Fotografe a folha preenchida — a IA extrai os dados</div>
+      </div>
+      ${S.scanError?`<div style="font-size:12px;color:var(--red-text);background:var(--red-bg);border-radius:var(--radius-sm);padding:6px 10px">${esc(S.scanError)}</div>`:''}
+      ${f.nome?`<span style="font-size:11px;background:var(--green-bg);color:var(--green-text);border-radius:20px;padding:3px 10px;font-weight:600">✓ Dados carregados</span>`:''}
+      <label style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;background:var(--green);color:#fff;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;white-space:nowrap;flex-shrink:0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        ${f.nome?'Nova foto':'Fotografar folha'}
+        <input type="file" accept="image/*" capture="environment" style="display:none" onchange="lerFolha(event)">
+      </label>
+    </div>`;
+  }
+
+  html+=`
+  <div class="form-card">
+    <div class="form-card-title">Médico responsável</div>
+    <div class="field">
+      <label class="form-label">Quem está preenchendo?</label>
+      <select id="f-medico">
+        <option value="">Selecione o médico</option>
+        ${medicos.map(m=>`<option value="${m}" ${f.medico===m?'selected':''}>${m}</option>`).join('')}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-title">Dados do paciente</div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="form-group"><label class="form-label">Nome completo</label>
+        <input type="text" id="f-nome" value="${esc(f.nome)}" placeholder="Nome do paciente"></div>
+      <div class="form-group"><label class="form-label">Prontuário</label>
+        <input type="text" id="f-pron" value="${esc(f.prontuario)}" placeholder="Nº prontuário"></div>
+    </div>
+    <div class="form-row-4">
+      <div class="form-group"><label class="form-label">Idade</label>
+        <input type="number" id="f-idade" value="${esc(f.idade)}" placeholder="Anos" min="0" max="130"></div>
+      <div class="form-group"><label class="form-label">Sexo</label>
+        <div class="pill-group" style="margin-top:2px">
+          <span class="pill ${f.sexo==='M'?'sel-blue':''}" onclick="setPill('sexo','M')">Masc.</span>
+          <span class="pill ${f.sexo==='F'?'sel-blue':''}" onclick="setPill('sexo','F')">Fem.</span>
+        </div></div>
+      <div class="form-group"><label class="form-label">Plano</label>
+        <select id="f-plano"><option value="">Selecione</option>
+          ${PLANOS.map(p=>`<option value="${p}" ${f.plano===p?'selected':''}>${p}</option>`).join('')}
+        </select></div>
+      <div class="form-group"><label class="form-label">Internação em</label>
+        <input type="date" id="f-internacao" value="${esc(f.internacao)}"></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-title">Clínica</div>
+    <label class="form-label" style="margin-bottom:8px">Diagnóstico principal</label>
+    <div class="pill-group" style="margin-bottom:20px">
+      ${DOENCAS.map(d=>`<span class="pill ${f.doenca===d?'sel-blue':''}" onclick="setPill('doenca','${d}')">${d}</span>`).join('')}
+    </div>
+    <div style="margin-bottom:20px">
+      <label class="form-label" style="margin-bottom:8px">Setor do paciente</label>
+      <div class="pill-group" id="setor-pills">
+        ${SETORES.map(s=>`<span class="pill ${f.setor===s?'sel-blue':''}" onclick="setPill('setor','${s}')">${s}</span>`).join('')}
+      </div>
+      ${f.setor==='Outros'?`<div style="margin-top:10px"><input type="text" id="f-setor-outro" value="${esc(f.setorOutro)}" placeholder="Especifique o setor..." style="max-width:300px"></div>`:''}
+    </div>
+    <label class="form-label" style="margin-bottom:8px">Tipo de atendimento</label>
+    <div class="pill-group">
+      <span class="pill ${f.tipo==='visita'?'sel-blue':''}" onclick="setPill('tipo','visita')">🩺 Visita</span>
+      <span class="pill ${f.tipo==='parecer'?'sel-warn':''}" onclick="setPill('tipo','parecer')">📋 Parecer</span>
+      <span class="pill ${f.tipo==='broncoscopia'?'sel-purple':''}" onclick="setPill('tipo','broncoscopia')">🔬 Broncoscopia</span>
+      <span class="pill ${f.tipo==='troca-canula'?'sel-teal':''}" onclick="setPill('tipo','troca-canula')">🔄 Troca de cânula</span>
+    </div>
+    ${f.tipo==='parecer'?`<div class="sub-box" style="margin-top:12px"><div class="sub-box-label">📋 Tipo de seguimento</div>
+      <div class="pill-group">
+        <span class="pill ${f.seguimento==='visita-diaria'?'sel-blue':''}" onclick="setPill('seguimento','visita-diaria')">🔄 Seguir em visita diária</span>
+        <span class="pill ${f.seguimento==='sob-demanda'?'sel-warn':''}" onclick="setPill('seguimento','sob-demanda')">📲 Sob demanda</span>
+      </div></div>`:''}
+    ${f.tipo==='broncoscopia'?`<div class="sub-box"><div class="sub-box-label">📍 Local do procedimento</div>
+      <div class="pill-group">
+        <span class="pill ${f.proc_sub==='beira-leito'?'sel-purple':''}" onclick="setPill('proc_sub','beira-leito')">🛏 Beira leito</span>
+        <span class="pill ${f.proc_sub==='centro-cirurgico'?'sel-purple':''}" onclick="setPill('proc_sub','centro-cirurgico')">🔪 Centro cirúrgico</span>
+      </div></div>`:''}
+    ${f.tipo==='visita'?`<div style="margin-top:20px"><label class="form-label" style="margin-bottom:8px">Desfecho da visita</label>
+      <div class="pill-group">
+        <span class="pill ${f.desfecho==='segue'?'sel-blue':''}" onclick="setPill('desfecho','segue')">Segue em visita</span>
+        <span class="pill ${f.desfecho==='alta-pneumo'?'sel-green':''}" onclick="setPill('desfecho','alta-pneumo')">Alta Pneumo</span>
+        <span class="pill ${f.desfecho==='alta-hosp'?'sel-red':''}" onclick="setPill('desfecho','alta-hosp')">Alta Hospitalar</span>
+      </div>
+      ${(f.desfecho==='alta-pneumo'||f.desfecho==='alta-hosp')?`<div class="consulta-box">
+        <div class="consulta-box-title">📅 Marcar consulta ambulatorial?</div>
+        <div class="pill-group">
+          <span class="pill ${f.consulta===true?'sel-green':''}" onclick="setPill('consulta',true)">✓ Sim, agendar</span>
+          <span class="pill ${f.consulta===false?'sel-red':''}" onclick="setPill('consulta',false)">✗ Não necessário</span>
+        </div></div>`:''}</div>`:''}
+  </div>`;
+
+  const ok=canSave();
+  html+=`<button class="btn-save" id="btn-salvar" onclick="salvar()" ${ok?'':'disabled'}>
+    ${ok?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar registro`
+    :'Preencha todos os campos obrigatórios'}
+  </button>`;
+  return html;
+}
+
+// -- FORMULÁRIO GESTOR (escolhe hospital) -------------------------------------
+function renderFormGestor(){
+  if(!S.gestorHosp){
+    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--text3)">
+      <div style="font-size:32px;margin-bottom:12px">🏥</div>
+      <p style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:6px">Selecione o hospital</p>
+      <p style="font-size:13px">Escolha o hospital na barra lateral para preencher o registro</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
+        ${HOSPITAIS.map((h,hi)=>`<button onclick="setGestorHospIdx(${hi})" style="padding:10px 20px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">${h}</button>`).join('')}
+      </div>
+    </div>`;
+  }
+  // render normal form but override hospital display
+  const savedHosp = S.session.hospital;
+  S.session.hospital = S.gestorHosp; // temporarily set for renderForm
+  const formHtml = renderForm();
+  S.session.hospital = savedHosp;
+  return`<div style="background:var(--amber-bg);border:1px solid #D4930A;border-radius:var(--radius-sm);padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:12px;font-weight:600;color:var(--amber-text)">🏥 Registrando para: ${esc(S.gestorHosp)}</span>
+    <span style="font-size:11px;color:var(--amber-text);margin-left:auto;cursor:pointer;text-decoration:underline" onclick="S.gestorHosp=null;render()">Trocar hospital</span>
+  </div>${formHtml}`;
+}
+
+// -- LISTA MÉDICO --------------------------------------------------------------
+function renderListaMedico(){
+  let recs=S.records.filter(r=>r.hospital===S.session.hospital);
+  const fTypes=['todos','visita','parecer','broncoscopia','troca-canula'];
+  const fLabels={todos:'Todos',visita:'Visitas',parecer:'Pareceres',broncoscopia:'Broncoscopias','troca-canula':'Troca de cânula'};
+  if(S.filter!=='todos')recs=recs.filter(r=>r.tipo===S.filter);
+  const hoje=recs.filter(r=>isToday(r.ts));
+  return`<div class="list-controls">
+    <div class="filter-row">${fTypes.map(f=>`<button class="filter-btn ${S.filter===f?'active':''}" onclick="setFilter('${f}')">${fLabels[f]}</button>`).join('')}</div>
+  </div>
+  <p class="list-meta">${hoje.length} hoje · ${recs.length} no total</p>
+  ${recs.length===0?`<div class="empty"><div class="empty-icon">📭</div><p>Nenhum registro</p></div>`
+  :recs.slice().reverse().map(r=>renderCard(r,false)).join('')}`;
+}
+
+function renderCard(r,showHosp){
+  const hoje=isToday(r.ts);
+  const tClass={visita:'tag-visita',parecer:'tag-parecer',broncoscopia:'tag-proc','troca-canula':'tag-proc'};
+  const tLabel={visita:'Visita',parecer:'Parecer',broncoscopia:r.proc_sub==='centro-cirurgico'?'Bronco CC':'Bronco BL','troca-canula':'Troca de cânula'};
+  let tags=`<span class="tag ${tClass[r.tipo]||'tag-proc'}">${tLabel[r.tipo]||r.tipo}</span>`;
+  if(r.seguimento==='visita-diaria')tags+=`<span class="tag tag-visita">Seguir visita diária</span>`;
+  if(r.seguimento==='sob-demanda')  tags+=`<span class="tag tag-parecer">Sob demanda</span>`;
+  if(r.desfecho==='alta-pneumo')tags+=`<span class="tag tag-alta-p">Alta Pneumo</span>`;
+  if(r.desfecho==='alta-hosp')  tags+=`<span class="tag tag-alta-h">Alta Hospitalar</span>`;
+  if(r.consulta===true)         tags+=`<span class="tag tag-consulta">Consulta solicitada</span>`;
+  if(showHosp&&r.hospital)      tags+=`<span class="tag tag-hosp">${r.hospital}</span>`;
+  const dias=r.internacao?diffDays(r.internacao,r.ts):null;
+  return`<div class="record-card">
+    <div class="record-top">
+      <div>
+        <div class="record-name">${esc(r.nome)} <span>· ${r.idade}a · ${r.sexo}</span></div>
+        <div class="record-sub">Pron. ${esc(r.prontuario)}${r.setor?' · <strong>'+esc(r.setor)+'</strong>':''} · ${esc(r.doenca)}${dias!==null?` · ${dias}d internado`:''}</div>
+        ${r.medico?`<div class="record-medico">${esc(r.medico)}</div>`:''}
+      </div>
+      <span class="record-date ${hoje?'date-hoje':'date-old'}">${hoje?'Hoje':new Date(r.ts).toLocaleDateString('pt-BR')}</span>
+    </div>
+    <div class="record-tags">${tags}</div>
+  </div>`;
+}
+
+// -- DASHBOARD -----------------------------------------------------------------
+function getMesSel(){
+  const now=new Date();
+  if(S.selectedMes) return S.selectedMes;
+  return {mes:now.getMonth(), ano:now.getFullYear()};
+}
+function renderMonthNav(){
+  const {mes,ano}=getMesSel();
+  const now=new Date();
+  const isNow=mes===now.getMonth()&&ano===now.getFullYear();
+  // compute prev/next
+  let pm=mes-1,pa=ano; if(pm<0){pm=11;pa--;}
+  let nm=mes+1,na=ano; if(nm>11){nm=0;na++;}
+  const canNext=!isNow;
+  return`<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+    <button onclick="S.selectedMes={mes:${pm},ano:${pa}};render()" style="padding:6px 14px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px">‹ ${NOMES_MES[pm]}</button>
+    <div style="flex:1;text-align:center">
+      <span style="font-size:18px;font-weight:700;letter-spacing:-0.02em">${NOMES_MES[mes]} ${ano}</span>
+      ${isNow?'<span style="font-size:11px;background:var(--green-bg);color:var(--green-text);border-radius:20px;padding:2px 8px;margin-left:8px;font-weight:600">mês atual</span>':''}
+    </div>
+    <button onclick="${canNext?`S.selectedMes={mes:${nm},ano:${na}};render()`:''}" style="padding:6px 14px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;opacity:${canNext?1:0.3}" ${canNext?'':'disabled'}>${NOMES_MES[nm]} ›</button>
+  </div>`;
+}
+function renderDash(){
+  const {mes:mesAtual,ano:anoAtual}=getMesSel();
+  const nomeMes=NOMES_MES[mesAtual];
+  const all=S.records;
+  const mesRecs=all.filter(r=>{ const d=new Date(r.ts); return d.getMonth()===mesAtual&&d.getFullYear()===anoAtual; });
+  const hoje=all.filter(r=>isToday(r.ts)).length;
+  const visitas=all.filter(r=>r.tipo==='visita').length;
+  const pareceres=all.filter(r=>r.tipo==='parecer').length;
+  const broncos=all.filter(r=>r.tipo==='broncoscopia').length;
+  const canulas=all.filter(r=>r.tipo==='troca-canula').length;
+  const altas=all.filter(r=>r.desfecho==='alta-pneumo'||r.desfecho==='alta-hosp').length;
+  const pendAgenda=all.filter(r=>r.consulta===true&&!r.data_agendada).length;
+  const avgDiasVal=calcInternacaoReal(mesRecs.filter(r=>r.tipo==='visita'));
+  const avgDias=avgDiasVal||'—';
+
+  // Calcular totais do mês para o banner
+  const vMes=mesRecs.filter(r=>r.tipo==='visita').length;
+  const pMes=mesRecs.filter(r=>r.tipo==='parecer').length;
+  const bBlMes=mesRecs.filter(r=>r.tipo==='broncoscopia'&&r.proc_sub==='beira-leito').length;
+  const bCcMes=mesRecs.filter(r=>r.tipo==='broncoscopia'&&r.proc_sub==='centro-cirurgico').length;
+  const cMes=mesRecs.filter(r=>r.tipo==='troca-canula').length;
+  const totalMes=calcValorTotal(vMes,pMes,bBlMes,bCcMes,cMes);
+
+  let html=renderMonthNav()+`<div class="export-bar">
+    <div class="export-bar-info">
+      <strong>📊 Produção de ${nomeMes} ${anoAtual}</strong>
+      ${mesRecs.length} registros · ${vMes} visitas · ${pMes} pareceres · ${bBlMes} bronco BL · ${bCcMes} bronco CC · ${cMes} cânulas
+      · <strong style="color:var(--green-text)">Total estimado: R$ ${totalMes.toLocaleString('pt-BR')}</strong>
+    </div>
+    <button class="btn-export" onclick="exportarPlanilha()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Exportar planilha ${nomeMes}
+    </button>
+  </div>`;
+
+  html+=`<div class="kpi-grid">
+    <div class="kpi"><div class="kpi-num">${all.length}</div><div class="kpi-label">Total registros</div></div>
+    <div class="kpi blue"><div class="kpi-num">${hoje}</div><div class="kpi-label">Hoje</div></div>
+    <div class="kpi"><div class="kpi-num">${visitas}</div><div class="kpi-label">Visitas</div></div>
+    <div class="kpi amber"><div class="kpi-num">${pareceres}</div><div class="kpi-label">Pareceres</div></div>
+    <div class="kpi purple"><div class="kpi-num">${broncos}</div><div class="kpi-label">Bronco</div></div>
+    <div class="kpi"><div class="kpi-num">${canulas}</div><div class="kpi-label">Cânulas</div></div>
+    <div class="kpi"><div class="kpi-num">${altas}</div><div class="kpi-label">Altas</div></div>
+    <div class="kpi amber"><div class="kpi-num">${avgDias}</div><div class="kpi-label">Dias med. internação</div></div>
+    ${pendAgenda>0?`<div class="kpi red"><div class="kpi-num">${pendAgenda}</div><div class="kpi-label">Ag. pendentes</div></div>`:''}
+  </div>`;
+
+  // Por hospital
+  html+=`<div class="section-title">Por hospital</div>
+  <div class="hosp-grid">`;
+  HOSPITAIS.forEach(h=>{
+    const rH=all.filter(r=>r.hospital===h);
+    const hHoje=rH.filter(r=>isToday(r.ts)).length;
+    const hAltas=rH.filter(r=>r.desfecho==='alta-pneumo'||r.desfecho==='alta-hosp').length;
+    const hPend=rH.filter(r=>r.consulta===true&&!r.data_agendada).length;
+    const hAvgVal=calcInternacaoReal(rH.filter(r=>r.tipo==='visita'&&new Date(r.ts).getMonth()===mesAtual&&new Date(r.ts).getFullYear()===anoAtual));
+    const hAvg=hAvgVal||'—';
+    html+=`<div class="hosp-card">
+      <div class="hosp-card-name"><span style="background:${HOSP_COLORS[h]}"></span>${h}</div>
+      <div class="hosp-stats">
+        <div class="hosp-stat"><div class="hosp-stat-num">${rH.length}</div><div class="hosp-stat-label">Total</div></div>
+        <div class="hosp-stat"><div class="hosp-stat-num">${hHoje}</div><div class="hosp-stat-label">Hoje</div></div>
+        <div class="hosp-stat"><div class="hosp-stat-num">${hAltas}</div><div class="hosp-stat-label">Altas</div></div>
+        <div class="hosp-stat"><div class="hosp-stat-num">${hAvg}d</div><div class="hosp-stat-label">Média int.</div></div>
+      </div>
+      ${hPend>0?`<div class="hosp-tags-row"><span class="tag tag-pendente">${hPend} ag. pendente</span></div>`:''}
+    </div>`;
+  });
+  html+=`</div>`;
+  return html;
+}
+
+// -- PRODUÇÃO POR MÉDICO -------------------------------------------------------
+function renderMedicos(){
+  const {mes,ano}=getMesSel();
+  const nomeMes=NOMES_MES[mes];
+  const all=S.records.filter(r=>{const d=new Date(r.ts);return d.getMonth()===mes&&d.getFullYear()===ano;});
+  const byMedico={};
+  all.forEach(r=>{
+    if(!r.medico)return;
+    const key=r.medico+'||'+(r.hospital||'');
+    if(!byMedico[key])byMedico[key]={nome:r.medico,hospital:r.hospital,total:0,visitas:0,pareceres:0,broncos:0,canulas:0,altas:0};
+    byMedico[key].total++;
+    if(r.tipo==='visita')byMedico[key].visitas++;
+    if(r.tipo==='parecer')byMedico[key].pareceres++;
+    if(r.tipo==='broncoscopia')byMedico[key].broncos++;
+    if(r.tipo==='troca-canula')byMedico[key].canulas++;
+    if(r.desfecho==='alta-pneumo'||r.desfecho==='alta-hosp')byMedico[key].altas++;
+  });
+  const rows=Object.values(byMedico).sort((a,b)=>b.total-a.total);
+  const nav=renderMonthNav();
+  if(!rows.length)return nav+`<div class="empty"><div class="empty-icon">👨‍⚕️</div><p>Nenhum registro com médico identificado em ${nomeMes}</p></div>`;
+  const rankClass=['gold','silver','bronze'];
+  return nav+`<table class="medico-table">
+    <thead><tr>
+      <th>#</th><th>Médico</th><th>Hospital</th>
+      <th>Total</th><th>Visitas</th><th>Pareceres</th><th>Bronco</th><th>Altas</th>
+    </tr></thead>
+    <tbody>${rows.map((m,i)=>`<tr>
+      <td><div class="medico-rank ${rankClass[i]||''}">${i+1}</div></td>
+      <td style="font-weight:600">${esc(m.nome)}</td>
+      <td><span class="tag tag-hosp">${esc(m.hospital||'')}</span></td>
+      <td style="font-weight:700;font-size:15px">${m.total}</td>
+      <td>${m.visitas}</td><td>${m.pareceres}</td><td>${m.broncos}</td><td>${m.altas}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// -- DIAGNÓSTICOS --------------------------------------------------------------
+function renderDiagnosticos(){
+  const {mes,ano}=getMesSel();
+  const nomeMes=NOMES_MES[mes];
+  const all=S.records.filter(r=>{const d=new Date(r.ts);return d.getMonth()===mes&&d.getFullYear()===ano;});
+  const byDx={};
+  all.forEach(r=>{const d=r.doenca||'Outro';byDx[d]=(byDx[d]||0)+1});
+  const rows=Object.entries(byDx).sort((a,b)=>b[1]-a[1]);
+  const max=rows[0]?rows[0][1]:1;
+  const navD=renderMonthNav();
+  if(!rows.length)return navD+`<div class="empty"><div class="empty-icon">🔬</div><p>Nenhum diagnóstico registrado em ${nomeMes}</p></div>`;
+  let html=navD+`<div class="bar-chart">`;
+  rows.forEach(([dx,cnt],i)=>{
+    const pct=Math.round((cnt/max)*100);
+    html+=`<div class="bar-row">
+      <div class="bar-label">${esc(dx)}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${DX_COLORS[i%DX_COLORS.length]}">
+          <span>${cnt}</span>
+        </div>
+      </div>
+      <div class="bar-count">${Math.round(cnt/all.length*100)}%</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // por hospital
+  html+=`<div class="section-title">Por hospital</div>`;
+  HOSPITAIS.forEach(h=>{
+    const rH=all.filter(r=>r.hospital===h);
+    if(!rH.length)return;
+    const byDxH={};
+    rH.forEach(r=>{const d=r.doenca||'Outro';byDxH[d]=(byDxH[d]||0)+1});
+    const topDx=Object.entries(byDxH).sort((a,b)=>b[1]-a[1]).slice(0,3);
+    html+=`<div style="margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text2)">${h}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${topDx.map(([dx,cnt])=>`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600">${esc(dx)} <span style="color:var(--text3)">${cnt}</span></span>`).join('')}
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+// -- LISTA GESTOR --------------------------------------------------------------
+function renderListaGestor(){
+  let recs=S.records;
+  if(S.filter!=='todos')recs=recs.filter(r=>r.hospital===S.filter);
+  return`<div class="list-controls">
+    <div class="filter-row">
+      ${HOSPITAIS.map((h,hi)=>`<button class="filter-btn ${S.filter===h?'active':''}" onclick="setFilterHospIdx(${hi})">${h}</button>`).join('')}
+      <button class="filter-btn ${S.filter==='todos'?'active':''}" onclick="setFilter('todos')">Todos</button>
+    </div>
+  </div>
+  <p class="list-meta">${recs.length} registro(s)</p>
+  ${recs.slice().reverse().map(r=>renderCard(r,true)).join('')||`<div class="empty"><div class="empty-icon">📭</div><p>Nenhum registro</p></div>`}`;
+}
+
+// -- FILA ENFERMEIRO -----------------------------------------------------------
+function renderFila(){
+  const hosp=S.session.hospital;
+  const pend=S.records.filter(r=>r.hospital===hosp&&r.consulta===true&&!r.data_agendada);
+  if(!pend.length)return`<div class="empty"><div class="empty-icon">✅</div><p>Nenhuma consulta pendente</p></div>`;
+  return`<p class="list-meta">${pend.length} paciente(s) aguardando</p>
+  ${pend.map(r=>renderAgendaCard(r)).join('')}`;
+}
+function renderAgendados(){
+  const hosp=S.session.hospital;
+  const ag=S.records.filter(r=>r.hospital===hosp&&r.consulta===true&&!!r.data_agendada)
+    .sort((a,b)=>(a.data_agendada||'').localeCompare(b.data_agendada||''));
+  if(!ag.length)return`<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma consulta agendada</p></div>`;
+  return`<p class="list-meta">${ag.length} consulta(s)</p>${ag.map(r=>renderAgendaCard(r,true)).join('')}`;
+}
+function renderFilaGestor(){
+  const pend=S.records.filter(r=>r.consulta===true&&!r.data_agendada);
+  if(!pend.length)return`<div class="empty"><div class="empty-icon">✅</div><p>Nenhuma consulta pendente</p></div>`;
+  // agrupar por hospital
+  let html=`<p class="list-meta">${pend.length} paciente(s) aguardando na rede</p>`;
+  HOSPITAIS.forEach(h=>{
+    const hPend=pend.filter(r=>r.hospital===h);
+    if(!hPend.length)return;
+    html+=`<div class="section-title" style="margin-top:20px">${h}</div>`;
+    html+=hPend.map(r=>renderAgendaCard(r,false,true)).join('');
+  });
+  return html;
+}
+function renderAgendaCard(r,agendado,readOnly){
+  return`<div class="agenda-card ${agendado?'agendado':'pendente'}">
+    <div class="agenda-top">
+      <div>
+        <div class="agenda-name">${esc(r.nome)}</div>
+        <div class="agenda-sub">Pron. ${esc(r.prontuario)} · ${r.idade}a · ${r.sexo} · ${esc(r.plano)}</div>
+        ${r.medico?`<div class="record-medico" style="margin-top:4px">${esc(r.medico)}</div>`:''}
+      </div>
+      <span class="agenda-status ${agendado?'status-agendado':'status-pendente'}">${agendado?'✓ Agendado':'⏳ Pendente'}</span>
+    </div>
+    <div class="alta-info">
+      <span class="tag tag-proc">${esc(r.doenca)}</span>
+      ${r.desfecho==='alta-pneumo'?'<span class="tag tag-alta-p">Alta Pneumo</span>':''}
+      ${r.desfecho==='alta-hosp'?'<span class="tag tag-alta-h">Alta Hospitalar</span>':''}
+      <span class="tag tag-hosp">${new Date(r.ts).toLocaleDateString('pt-BR')}</span>
+    </div>
+    ${agendado?`<div class="agendado-info">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A4535" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Consulta agendada para ${fmtDate(r.data_agendada)}</span>
+      ${!readOnly?`<button class="btn-reeditar" onclick="reeditarAgenda(${r.id})">Alterar data</button>`:''}
+    </div>`
+    : readOnly?'':`<div class="agenda-data-row">
+      <input type="date" id="dt-${r.id}" min="${new Date().toISOString().split('T')[0]}">
+      <button class="btn-confirmar" onclick="confirmarAgenda(${r.id})">Confirmar data</button>
+    </div>`}
+  </div>`;
+}
+
+// -- AÇÕES ---------------------------------------------------------------------
+function setNav(n){S.nav=n;S.saved=false;S.filter='todos';S.scanning=false;S.scanError=null;if(n!=='novo-gestor'){}render()}
+function setGestorHosp(h){S.gestorHosp=h;S.form=emptyForm();S.saved=false;render()}
+function setGestorHospIdx(i){setGestorHosp(HOSPITAIS[i])}
+function setFilterHospIdx(i){setFilter(HOSPITAIS[i])}
+function setFilter(f){S.filter=f;render()}
+function setPill(field,val){
+  if(field==='tipo'){S.form.desfecho='';S.form.consulta=null;S.form.proc_sub=''}
+  if(field==='desfecho'){S.form.consulta=null}
+  S.form[field]=val;S.saved=false;render();
+}
+function salvar(){
+  const g=id=>document.getElementById(id)?.value;
+  const hosp = S.session.role==='gestor' ? S.gestorHosp : S.session.hospital;
+  const rec = {
+    id:Date.now(), hospital:hosp,
+    medico:g('f-medico')||S.form.medico,
+    nome:g('f-nome')||S.form.nome,
+    prontuario:g('f-pron')||S.form.prontuario,
+    idade:g('f-idade')||S.form.idade,
+    sexo:S.form.sexo,
+    plano:g('f-plano')||S.form.plano,
+    doenca:S.form.doenca,
+    setor:(S.form.setor==='Outros'?(S.form.setorOutro||'Outros'):S.form.setor)||'',
+    internacao:g('f-internacao')||S.form.internacao,
+    seguimento:S.form.seguimento||null,
+    tipo:S.form.tipo,
+    proc_sub:S.form.proc_sub||null,
+    desfecho:S.form.desfecho||null,
+    consulta:S.form.consulta,
+    data_agendada:null,
+    ts:new Date().toISOString()
+  };
+  S.records.push(rec);
+  persist(rec);
+  S.form=emptyForm();S.saved=true;render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function canSave(){
+  const f=S.form;
+  if(!f.medico||!f.nome||!f.prontuario||!f.sexo||!f.plano||!f.doenca||!f.tipo)return false;
+  if(f.tipo==='troca-canula')return true;
+  if(f.tipo==='parecer')return!!f.seguimento;
+  if(f.tipo==='broncoscopia')return!!f.proc_sub;
+  if(f.tipo==='visita')return!!f.desfecho&&(f.desfecho==='segue'||f.consulta!==null);
+  return false;
+}
+function confirmarAgenda(id){
+  const input=document.getElementById('dt-'+id);
+  if(!input?.value){alert('Selecione uma data.');return}
+  const rec=S.records.find(r=>r.id===id);
+  if(rec){rec.data_agendada=input.value;persist(rec);render()}
+}
+function reeditarAgenda(id){
+  const rec=S.records.find(r=>r.id===id);
+  if(rec){rec.data_agendada=null;persist(rec);render()}
+}
+function bindInputs(){
+  [['f-medico','medico'],['f-nome','nome'],['f-pron','prontuario'],['f-idade','idade'],['f-plano','plano'],['f-internacao','internacao'],['f-setor-outro','setorOutro']].forEach(([id,field])=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener(el.tagName==='SELECT'?'change':'input',e=>{
+      S.form[field]=e.target.value;
+      const b=document.getElementById('btn-salvar');
+      if(b)b.disabled=!canSave();
+    });
+  });
+}
+
+// -- ICONS ---------------------------------------------------------------------
+function iconPlus(){return`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`}
+function iconList(){return`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`}
+function iconGrid(){return`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`}
+function iconUser(){return`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`}
+function iconDx()  {return`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`}
+function iconCal() {return`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`}
+function iconCheck(){return`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`}
+
+// -- PRECIFICAÇÃO -------------------------------------------------------------
+// Tabela 2026 — Copa D'Or
+// Visita: R$100/unid · Parecer: R$2.500 fixo (≤10) + R$350 variável (>10)
+// Bronco BL / Troca cânula: R$750/unid · Bronco CC: R$1.400/unid
+function calcParecer(qtd){
+  if(!qtd)return 0;
+  if(qtd<=10)return 2500;
+  return 2500+(qtd-10)*350;
+}
+function calcValorTotal(vis,par,bbl,bcc,can){
+  return(vis*100)+calcParecer(par)+(bbl*750)+(bcc*1400)+(can*750);
+}
+function valorUnitRec(r){
+  if(r.tipo==='visita')return 100;
+  if(r.tipo==='parecer')return 250;
+  if(r.tipo==='broncoscopia'&&r.proc_sub==='centro-cirurgico')return 1400;
+  if(r.tipo==='broncoscopia')return 750;
+  if(r.tipo==='troca-canula')return 750;
+  return 0;
+}
+
+// -- EXPORTAR PLANILHA ---------------------------------------------------------
+function exportarPlanilha(){
+  if(typeof XLSX==='undefined'){alert('Biblioteca XLSX não carregada. Verifique a conexão com a internet.');return;}
+  const {mes,ano}=getMesSel();
+  const now=new Date();
+  const NOMES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const nomeMes=NOMES[mes];
+  const mesRecs=S.records.filter(r=>{const d=new Date(r.ts);return d.getMonth()===mes&&d.getFullYear()===ano;});
+
+  const wb=XLSX.utils.book_new();
+
+  // -- ABA RESUMO --
+  const resumo=[
+    [`Pneumo D'Or Rio de Janeiro — Produção ${nomeMes} ${ano}`],
+    [`Gerado em: ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')}`],
+    [],
+    ['Hospital','Visitas','Pareceres','Bronco BL','Bronco CC','Troca Cânula','Total Proc.','Val. Visitas (R$)','Val. Pareceres (R$)','Val. Bronco BL (R$)','Val. Bronco CC (R$)','Val. Cânulas (R$)','TOTAL (R$)','Média Internação (dias)'],
+  ];
+  let tG={vis:0,par:0,bbl:0,bcc:0,can:0,valor:0};
+  HOSPITAIS.forEach(h=>{
+    const rH=mesRecs.filter(r=>r.hospital===h);
+    const vis=rH.filter(r=>r.tipo==='visita').length;
+    const par=rH.filter(r=>r.tipo==='parecer').length;
+    const bbl=rH.filter(r=>r.tipo==='broncoscopia'&&r.proc_sub==='beira-leito').length;
+    const bcc=rH.filter(r=>r.tipo==='broncoscopia'&&r.proc_sub==='centro-cirurgico').length;
+    const can=rH.filter(r=>r.tipo==='troca-canula').length;
+    const vVis=vis*100, vPar=calcParecer(par), vBbl=bbl*750, vBcc=bcc*1400, vCan=can*750;
+    const tot=vVis+vPar+vBbl+vBcc+vCan;
+    const hRecs=mesRecs.filter(r=>r.hospital===h);
+    const hIntVal=calcInternacaoReal(hRecs.filter(r=>r.tipo==='visita'));
+    resumo.push([h,vis,par,bbl,bcc,can,vis+par+bbl+bcc+can,vVis,vPar,vBbl,vBcc,vCan,tot,hIntVal?Number(hIntVal):'-']);
+    tG.vis+=vis;tG.par+=par;tG.bbl+=bbl;tG.bcc+=bcc;tG.can+=can;tG.valor+=tot;
+  });
+  resumo.push([]);
+  const tVis=tG.vis*100,tPar=calcParecer(tG.par),tBbl=tG.bbl*750,tBcc=tG.bcc*1400,tCan=tG.can*750;
+  resumo.push(['TOTAL REDE',tG.vis,tG.par,tG.bbl,tG.bcc,tG.can,tG.vis+tG.par+tG.bbl+tG.bcc+tG.can,tVis,tPar,tBbl,tBcc,tCan,tG.valor]);
+  resumo.push([]);
+  resumo.push(['Tabela de valores aplicada (2026)']);
+  resumo.push(['Procedimento','Valor','Observação']);
+  resumo.push(['Visita Hospitalar','R$ 100','Por atendimento']);
+  resumo.push(['Parecer','R$ 250','Fixo R$2.500 (≤10/mês) + R$350 variável (>10)']);
+  resumo.push(['Broncoscopia Beira Leito','R$ 750','Por procedimento']);
+  resumo.push(['Broncoscopia Centro Cirúrgico','R$ 1.400','Por procedimento']);
+  resumo.push(['Troca de Cânula','R$ 750','Por procedimento']);
+  const wsR=XLSX.utils.aoa_to_sheet(resumo);
+  wsR['!cols']=[{wch:28},{wch:10},{wch:12},{wch:12},{wch:12},{wch:14},{wch:13},{wch:18},{wch:20},{wch:19},{wch:20},{wch:17},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,wsR,'Resumo');
+
+  // -- ABA POR MÉDICO --
+  const byM={};
+  mesRecs.forEach(r=>{
+    if(!r.medico)return;
+    const k=r.medico+'||'+(r.hospital||'');
+    if(!byM[k])byM[k]={nome:r.medico,hospital:r.hospital||'',vis:0,par:0,bbl:0,bcc:0,can:0};
+    if(r.tipo==='visita')byM[k].vis++;
+    if(r.tipo==='parecer')byM[k].par++;
+    if(r.tipo==='broncoscopia'&&r.proc_sub==='beira-leito')byM[k].bbl++;
+    if(r.tipo==='broncoscopia'&&r.proc_sub==='centro-cirurgico')byM[k].bcc++;
+    if(r.tipo==='troca-canula')byM[k].can++;
+  });
+  const medData=[
+    [`Produção por Médico — ${nomeMes} ${ano}`],[],
+    ['Médico','Hospital','Visitas','Pareceres','Bronco BL','Bronco CC','Troca Cânula','Total Proc.','Valor Total (R$)'],
+  ];
+  Object.values(byM).sort((a,b)=>{
+    return(b.vis*100+calcParecer(b.par)+b.bbl*750+b.bcc*1400+b.can*750)-(a.vis*100+calcParecer(a.par)+a.bbl*750+a.bcc*1400+a.can*750);
+  }).forEach(m=>{
+    const v=m.vis*100+calcParecer(m.par)+m.bbl*750+m.bcc*1400+m.can*750;
+    medData.push([m.nome,m.hospital,m.vis,m.par,m.bbl,m.bcc,m.can,m.vis+m.par+m.bbl+m.bcc+m.can,v]);
+  });
+  const wsM=XLSX.utils.aoa_to_sheet(medData);
+  wsM['!cols']=[{wch:26},{wch:16},{wch:10},{wch:12},{wch:12},{wch:12},{wch:14},{wch:13},{wch:17}];
+  XLSX.utils.book_append_sheet(wb,wsM,'Por Médico');
+
+  // -- ABA REGISTROS DETALHADOS --
+  const detData=[
+    [`Registros Detalhados — ${nomeMes} ${ano}`],[],
+    ['Data','Hospital','Médico','Paciente','Prontuário','Setor','Diagnóstico','Procedimento','Seguimento','Desfecho','Valor Unit. (R$)'],
+  ];
+  const tLabel={visita:'Visita',parecer:'Parecer',broncoscopia:'Broncoscopia','troca-canula':'Troca Cânula'};
+  mesRecs.slice().sort((a,b)=>a.ts.localeCompare(b.ts)).forEach(r=>{
+    const d=new Date(r.ts);
+    const proc=r.tipo==='broncoscopia'?(r.proc_sub==='centro-cirurgico'?'Bronco CC':'Bronco BL'):tLabel[r.tipo]||r.tipo;
+    const segLabel=r.seguimento==='visita-diaria'?'Visita diária':r.seguimento==='sob-demanda'?'Sob demanda':'';
+    detData.push([d.toLocaleDateString('pt-BR'),r.hospital||'',r.medico||'',r.nome||'',r.prontuario||'',r.setor||'',r.doenca||'',proc,segLabel,r.desfecho||'—',valorUnitRec(r)]);
+  });
+  const wsD=XLSX.utils.aoa_to_sheet(detData);
+  wsD['!cols']=[{wch:12},{wch:14},{wch:24},{wch:34},{wch:12},{wch:18},{wch:30},{wch:14},{wch:16},{wch:16},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,wsD,'Registros');
+
+  XLSX.writeFile(wb,`PneumoDor_Producao_${nomeMes}_${ano}.xlsx`);
+}
+
+// -- LEITURA DE FOLHA POR IA ---------------------------------------------------
+async function lerFolha(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  S.scanning = true; S.scanError = null; render();
+  try {
+    const base64 = await new Promise((res,rej) => {
+      const r = new FileReader();
+      r.onload = e => res(e.target.result.split(',')[1]);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+    const mediaType = file.type || 'image/jpeg';
+    const prompt = `Analise esta folha de visita/parecer de pneumologia e extraia os dados de CADA paciente listado.
+Retorne SOMENTE um array JSON, sem markdown, sem explicações.
+Para cada paciente extraia:
+- nome: nome completo (string)
+- prontuario: número do prontuário, só dígitos (string)
+- tipo: "visita" se Visita marcado, "parecer" se Parecer marcado, "broncoscopia" se Broncoscopia marcado
+- proc_sub: se broncoscopia = "beira-leito" ou "centro-cirurgico". Caso contrário null.
+- seguimento: se parecer = "visita-diaria" (acompanhamento diário) ou "sob-demanda" (pontual). Caso contrário null.
+- doenca: diagnósticos marcados com X, unidos por " / " (ex: "DPOC / Pneumonia")
+- plano: plano de saúde se visível, senão ""
+- setor: setor do paciente se visível (ex: "Clínica Médica", "UTI"), senão ""
+- medico: nome do médico no cabeçalho
+- data: data da folha YYYY-MM-DD se visível
+
+Exemplo: [{"nome":"João Silva","prontuario":"123456","tipo":"visita","proc_sub":null,"seguimento":null,"doenca":"Pneumonia","plano":"Bradesco","setor":"Clínica Médica","medico":"Felipe Gonzalez","data":"2026-05-28"}]`;
+
+    const resp = await fetch('/api/claude', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 2000,
+        messages: [{role:'user', content:[
+          {type:'image', source:{type:'base64', media_type:mediaType, data:base64}},
+          {type:'text', text:prompt}
+        ]}]
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error?.message || 'Erro na API');
+    const text = data.content.map(c=>c.text||'').join('').trim().replace(/```json|```/g,'').trim();
+    const pacientes = JSON.parse(text);
+    if (!Array.isArray(pacientes)||!pacientes.length) throw new Error('Nenhum paciente identificado na imagem');
+    S.scanning = false;
+    if (pacientes.length === 1) {
+      aplicarDadosFolha(pacientes[0]);
+    } else {
+      S.pacientesFolha = pacientes;
+      S.nav = 'selecionar-paciente';
+      render();
+    }
+  } catch(e) {
+    S.scanning = false;
+    S.scanError = e.message || 'Erro ao processar a imagem';
+    render();
+  }
+}
+
+function aplicarDadosFolha(p) {
+  const hosp = S.session.role==='gestor' ? S.gestorHosp : S.session.hospital;
+  const medicos = MEDICOS_HOSP[hosp]||[];
+  let medicoMatch = '';
+  if (p.medico) {
+    const pl = p.medico.toLowerCase().replace(/[^\w\s]/g,'');
+    medicoMatch = medicos.find(m => {
+      const ml = m.toLowerCase();
+      const parts = pl.split(' ').filter(x=>x.length>2);
+      return parts.some(pt => ml.includes(pt));
+    }) || '';
+  }
+  S.form = {...emptyForm(),
+    medico: medicoMatch || S.form.medico,
+    nome: p.nome||'', prontuario: p.prontuario||'',
+    doenca: p.doenca||'', tipo: p.tipo||'',
+    proc_sub: p.proc_sub||'', seguimento: p.seguimento||'',
+    setor: p.setor||'', plano: p.plano||'',
+  };
+  S.scanning=false; S.scanError=null; S.nav='novo';
+  render();
+  setTimeout(()=>{
+    const el=document.getElementById('f-medico');
+    if(el&&medicoMatch){el.value=medicoMatch;S.form.medico=medicoMatch;}
+    const btn=document.getElementById('btn-salvar');
+    if(btn)btn.disabled=!canSave();
+  },100);
+}
+
+function renderSelecionarPaciente(){
+  const ps=S.pacientesFolha||[];
+  return`<div class="page-header"><h2>Pacientes na folha</h2><p>${ps.length} pacientes encontrados — selecione qual registrar agora</p></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    ${ps.map((p,i)=>`
+      <div class="record-card" style="cursor:pointer;border-left:3px solid var(--green)" onclick="selecionarPacienteFolha(${i})">
+        <div class="record-top">
+          <div>
+            <div class="record-name">${esc(p.nome||'Sem nome')}</div>
+            <div class="record-sub">Pron. ${esc(p.prontuario||'—')} · ${esc(p.doenca||'—')}${p.setor?' · '+esc(p.setor):''}</div>
+          </div>
+          <span class="tag ${p.tipo==='visita'?'tag-visita':p.tipo==='parecer'?'tag-parecer':'tag-proc'}">${p.tipo==='visita'?'Visita':p.tipo==='parecer'?'Parecer':'Bronco'}</span>
+        </div>
+      </div>`).join('')}
+    <button onclick="S.nav='novo';S.pacientesFolha=null;render()" style="padding:10px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);font-family:'Inter',sans-serif;margin-top:4px">Preencher manualmente</button>
+  </div>`;
+}
+
+function selecionarPacienteFolha(idx){
+  const p = S.pacientesFolha[idx];
+  S.pacientesFolha = null;
+  aplicarDadosFolha(p);
+}
+
+loadRecords();
+</script>
+</body>
+</html>
