@@ -1100,7 +1100,11 @@ function salvar(){
   };
   S.records.push(rec);
   persist(rec);
-  S.form=emptyForm();S.saved=true;render();
+  S.form=emptyForm();S.saved=true;
+  if(S.pacientesFolha && S.pacientesFolha.length > 0){
+    S.nav='selecionar-paciente';
+  }
+  render();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1279,12 +1283,17 @@ Para cada paciente extraia:
 - proc_sub: se broncoscopia = "beira-leito" ou "centro-cirurgico". Caso contrário null.
 - seguimento: se parecer = "visita-diaria" (acompanhamento diário) ou "sob-demanda" (pontual). Caso contrário null.
 - doenca: diagnósticos marcados com X, unidos por " / " (ex: "DPOC / Pneumonia")
-- plano: plano de saúde se visível, senão ""
-- setor: setor do paciente se visível (ex: "Clínica Médica", "UTI"), senão ""
-- medico: nome do médico no cabeçalho
-- data: data da folha YYYY-MM-DD se visível
+- plano: plano de saúde visível na etiqueta do paciente (ex: "Bradesco Saúde", "Unimed", "Amil"), senão ""
+- setor: setor do paciente visível na etiqueta (ex: "Clínica Médica", "UTI", "Emergência"), senão ""
+- medico: nome do médico no cabeçalho da folha
+- data: data da folha no formato YYYY-MM-DD
+- idade: idade do paciente em anos calculada a partir da data de nascimento visível na etiqueta (ex: se nasceu em 1942 e a folha é de 2026, idade = 84). Retorne só o número inteiro, senão ""
+- sexo: "M" se Sexo M na etiqueta, "F" se Sexo F, senão ""
+- internacao: data de entrada/internação visível na etiqueta no formato YYYY-MM-DD, senão ""
 
-Exemplo: [{"nome":"João Silva","prontuario":"123456","tipo":"visita","proc_sub":null,"seguimento":null,"doenca":"Pneumonia","plano":"Bradesco","setor":"Clínica Médica","medico":"Felipe Gonzalez","data":"2026-05-28"}]`;
+Atenção: as etiquetas dos pacientes contêm campos como "Nascimento:", "Entrada:", "Sexo", plano de saúde e setor. Leia com atenção esses campos.
+
+Exemplo: [{"nome":"João Silva","prontuario":"123456","tipo":"visita","proc_sub":null,"seguimento":null,"doenca":"Pneumonia","plano":"Bradesco Saúde","setor":"Clínica Médica","medico":"Felipe Gonzalez","data":"2026-05-28","idade":"84","sexo":"M","internacao":"2026-05-24"}]`;
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1337,9 +1346,11 @@ function aplicarDadosFolha(p) {
   S.form = {...emptyForm(),
     medico: medicoMatch || S.form.medico,
     nome: p.nome||'', prontuario: p.prontuario||'',
+    idade: p.idade||'', sexo: p.sexo||'',
     doenca: p.doenca||'', tipo: p.tipo||'',
     proc_sub: p.proc_sub||'', seguimento: p.seguimento||'',
     setor: p.setor||'', plano: p.plano||'',
+    internacao: p.internacao||'',
   };
   S.scanning=false; S.scanError=null; S.nav='novo';
   render();
@@ -1371,7 +1382,8 @@ function renderSelecionarPaciente(){
 
 function selecionarPacienteFolha(idx){
   const p = S.pacientesFolha[idx];
-  S.pacientesFolha = null;
+  S.pacientesFolha = S.pacientesFolha.filter((_,i) => i !== idx);
+  if(S.pacientesFolha.length === 0) S.pacientesFolha = null;
   aplicarDadosFolha(p);
 }
 
